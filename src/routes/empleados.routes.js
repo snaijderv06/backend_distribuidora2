@@ -3,10 +3,10 @@ import { actualizarEmpleados, eliminarEmpleados, obtenerEmpleados, registrarEmpl
 
 const router = Router();
 
-// Ruta para obtener todos los clientes
+// Ruta para obtener todos los empleados
 router.get('/empleados', obtenerEmpleados);
 
-// Ruta para obtener un cliente por su ID
+// Ruta para obtener un empleado por su ID
 router.get('/empleado/:id', obtenerEmpleados);
 
 router.post('/registrarEmpleados',registrarEmpleados);

@@ -73,3 +73,84 @@ export const registrarProducto = async (req, res) => {
     });
   }
 };
+
+// Actualizar un producto
+export const actualizarProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      nombre_producto, 
+      descripcion_producto, 
+      id_categoria, 
+      precio_unitario, 
+      stock, 
+      imagen 
+    } = req.body;
+
+    // Validación básica de campos requeridos
+    if (!nombre_producto || !id_categoria || !precio_unitario || !stock) {
+      return res.status(400).json({
+        mensaje: 'Faltan campos requeridos: nombre, categoría, precio o stock.'
+      });
+    }
+
+    const [result] = await pool.query(
+      `UPDATE productos 
+       SET nombre_producto = ?, 
+           descripcion_producto = ?, 
+           id_categoria = ?, 
+           precio_unitario = ?, 
+           stock = ?, 
+           imagen = ?
+       WHERE id_producto = ?`,
+      [
+        nombre_producto,
+        descripcion_producto || null,
+        id_categoria,
+        precio_unitario,
+        stock,
+        imagen || null,
+        id
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `No se encontró el producto con ID ${id}`
+      });
+    }
+
+    res.json({
+      mensaje: 'Producto actualizado exitosamente'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al actualizar el producto.',
+      error: error.message
+    });
+  }
+};
+
+// Eliminar un producto
+export const eliminarProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [result] = await pool.query('DELETE FROM productos WHERE id_producto = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        mensaje: `No se encontró el producto con ID ${id}`
+      });
+    }
+
+    res.json({
+      mensaje: 'Producto eliminado exitosamente'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      mensaje: 'Ha ocurrido un error al eliminar el producto.',
+      error: error.message
+    });
+  }
+};

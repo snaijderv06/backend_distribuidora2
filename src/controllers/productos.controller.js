@@ -8,7 +8,7 @@ export const obtenerProductos = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       mensaje: 'Ha ocurrido un error al leer los datos de los productos.',
-      error: error
+      error: error.message
     });
   }
 };
@@ -26,7 +26,8 @@ export const obtenerProducto = async (req, res) => {
     res.json(result[0]);
   } catch (error) {
     return res.status(500).json({
-      mensaje: 'Ha ocurrido un error al leer los datos del producto.'
+      mensaje: 'Ha ocurrido un error al leer los datos del producto.',
+      error: error.message
     });
   }
 };
@@ -54,11 +55,11 @@ export const registrarProducto = async (req, res) => {
       'INSERT INTO Productos (nombre_producto, descripcion_producto, id_categoria, precio_unitario, stock, imagen) VALUES (?, ?, ?, ?, ?, ?)',
       [
         nombre_producto,
-        descripcion_producto || null, // Puede ser opcional
+        descripcion_producto || null,
         id_categoria,
         precio_unitario,
         stock,
-        imagen || null // Puede ser opcional
+        imagen || null
       ]
     );
 
@@ -94,6 +95,13 @@ export const actualizarProducto = async (req, res) => {
       });
     }
 
+    // Validar formato de imagen Base64 si se proporciona
+    if (imagen && !imagen.match(/^[A-Za-z0-9+/=]+$/)) {
+      return res.status(400).json({
+        mensaje: 'El formato de la imagen no es válido (debe ser Base64).'
+      });
+    }
+
     const [result] = await pool.query(
       `UPDATE productos 
        SET nombre_producto = ?, 
@@ -101,7 +109,7 @@ export const actualizarProducto = async (req, res) => {
            id_categoria = ?, 
            precio_unitario = ?, 
            stock = ?, 
-           imagen = ?
+           imagen = COALESCE(?, imagen)
        WHERE id_producto = ?`,
       [
         nombre_producto,
@@ -109,7 +117,7 @@ export const actualizarProducto = async (req, res) => {
         id_categoria,
         precio_unitario,
         stock,
-        imagen || null,
+        imagen,
         id
       ]
     );

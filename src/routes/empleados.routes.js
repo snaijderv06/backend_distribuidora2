@@ -1,18 +1,14 @@
+// routes/empleados.routes.js
 import { Router } from 'express';
-import { actualizarEmpleados, eliminarEmpleados, obtenerEmpleados, registrarEmpleados } from '../controllers/empleados.controller.js';
+import { actualizarEmpleados, eliminarEmpleados, obtenerEmpleados, obtenerEmpleado, registrarEmpleados } from '../controllers/empleados.controller.js';
 
 const router = Router();
 
-// Ruta para obtener todos los empleados
+
 router.get('/empleados', obtenerEmpleados);
-
-// Ruta para obtener un empleado por su ID
-router.get('/empleado/:id', obtenerEmpleados);
-
-router.post('/registrarEmpleados',registrarEmpleados);
-
-router.delete('/eliminarempleados/:id', eliminarEmpleados)
-
-router.patch('/actualizarempleados/:id', actualizarEmpleados)
+router.get('/empleado/:id', obtenerEmpleado); // Corregido: usar 'obtenerEmpleado' en lugar de 'obtenerEmpleados'
+router.post('/registrarEmpleados', registrarEmpleados);
+router.delete('/eliminarempleados/:id', eliminarEmpleados);
+router.patch('/actualizarempleados/:id', actualizarEmpleados);
 
 export default router;
